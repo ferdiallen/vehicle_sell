@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Vehicle Seller</string>
+    <string name="search_by_categories">Search by categories</string>
+    <string name="car_shop_title">Car Shop</string>
+</resources>
