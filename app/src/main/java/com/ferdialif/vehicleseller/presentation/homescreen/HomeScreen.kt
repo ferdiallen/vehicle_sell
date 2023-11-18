@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
@@ -43,6 +44,11 @@ import coil.compose.AsyncImage
 import com.ferdialif.vehicleseller.R
 import com.ferdialif.vehicleseller.domain.model.CarType
 import com.ferdialif.vehicleseller.ui.theme.MainColorAccent
+
+val listCar = listOf(
+    R.raw.civic,
+    R.raw.aventador
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,16 +113,16 @@ fun HomeScreen(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp), contentPadding = PaddingValues(
-                bottom = 20.dp
+                bottom = 64.dp
             )
         ) {
-            items(10) {
+            items(listCar) {
                 VehicleItem(
                     modifier = Modifier
                         .height(240.dp)
                         .offset(y = if (it % 2 == 0) 0.dp else 50.dp),
                     name = "Civic Type-R",
-                    image = R.raw.civic,
+                    image = it,
                     price = "Rp.5.000.000,00"
                 )
             }
