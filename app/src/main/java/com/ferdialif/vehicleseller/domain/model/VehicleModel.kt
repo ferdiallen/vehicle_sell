@@ -28,7 +28,10 @@ data class Car(
     override val price: String = "",
 ) : VehicleModel
 
+@Entity
 data class Bicycle(
+    @PrimaryKey
+    val id:Int? = null,
     val name: String = "",
     val engine: String = "",
     val suspension: String = "",

@@ -12,6 +12,7 @@ room-database = "2.6.0"
 ksp-version = "1.9.0-1.0.13"
 hilt-version = "2.48.1"
 coil = "2.5.0"
+kotlinx-serialization = "1.6.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -35,11 +36,13 @@ dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref 
 dagger-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt-version" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
-icons-extended = {group="androidx.compose.material",name = "material-icons-extended"}
+icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
 dagger = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }
+kotlinx-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
