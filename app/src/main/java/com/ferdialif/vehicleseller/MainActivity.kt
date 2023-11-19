@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VehicleSellerTheme {
-                DetailScreen(
+                HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()

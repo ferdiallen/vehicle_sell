@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Vehicle Seller</string>
     <string name="search_by_categories">Search by categories</string>
-    <string name="car_shop_title">Car Shop</string>
+    <string name="car_shop_title">Vehicle Shop Dashboard</string>
+    <string name="specification">%1$s Specification</string>
+    <string name="current_sales_title">Current sales</string>
+    <string name="orders">Orders</string>
+    <string name="gross">Gross</string>
 </resources>
