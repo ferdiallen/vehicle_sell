@@ -6,4 +6,5 @@
     <string name="current_sales_title">Current sales</string>
     <string name="orders">Orders</string>
     <string name="gross">Gross</string>
+    <string name="no_car_title">No vehicle is available at the moment</string>
 </resources>

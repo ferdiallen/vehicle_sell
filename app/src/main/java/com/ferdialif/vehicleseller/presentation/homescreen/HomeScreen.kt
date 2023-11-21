@@ -1,6 +1,16 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 package com.ferdialif.vehicleseller.presentation.homescreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,12 +27,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Insights
@@ -32,11 +45,19 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,22 +68,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.ferdialif.vehicleseller.R
 import com.ferdialif.vehicleseller.core.cardata.carData
+import com.ferdialif.vehicleseller.core.cardata.tabVehicle
+import com.ferdialif.vehicleseller.domain.model.Car
 import com.ferdialif.vehicleseller.domain.model.CarType
+import com.ferdialif.vehicleseller.domain.model.Motorcycle
 import com.ferdialif.vehicleseller.ui.theme.MainColorAccent
+import com.ferdialif.vehicleseller.utils.toProperNumberFormat
+import kotlinx.coroutines.launch
 
-val listCar = listOf(
-    R.raw.civic,
-    R.raw.aventador
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val carValues by viewModel.carList.collectAsState(initial = emptyList())
+    val motorcycleValue by viewModel.motorcycleList.collectAsState(initial = emptyList())
+    val pagerState = rememberPagerState(pageCount = { tabVehicle.size })
+    val currentPage by remember {
+        derivedStateOf {
+            pagerState.currentPage
+        }
+    }
+    val scope = rememberCoroutineScope()
     Column(
         modifier
             .statusBarsPadding()
@@ -92,18 +124,33 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
             ) {
-                val soldCars = remember {
+                val soldCars = remember(carValues) {
                     carData.map {
                         it.sold
                     }.reduce { acc, i ->
                         acc + i
                     }.toString()
                 }
+                val soldMotorcycle = remember(motorcycleValue.size) {
+                    return@remember if (motorcycleValue.isNotEmpty()) {
+                        motorcycleValue.map {
+                            it.sold
+                        }.reduce { acc, d ->
+                            acc + d
+                        }.toString()
+                    } else {
+                        ""
+                    }
+                }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1F)
                 ) {
-                    Text(text = soldCars , fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        text = if (pagerState.currentPage == 0) soldCars else soldMotorcycle,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Text(text = stringResource(R.string.orders), color = Color.LightGray)
                 }
                 Card(
@@ -116,10 +163,36 @@ fun HomeScreen(
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.weight(1F)
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(horizontal = 12.dp)
                 ) {
+                    val carTotalPrice = remember(carValues) {
+                        if (carValues.isNotEmpty()) {
+                            carValues.map {
+                                Pair(it.price, it.sold)
+                            }.map {
+                                (it.first * it.second)
+                            }.reduce { acc, d ->
+                                acc + d
+                            }.toProperNumberFormat()
+                        } else {
+                            0.0.toProperNumberFormat()
+                        }
+                    }
+                    val motorcycleTotalPrice = remember(motorcycleValue) {
+                        return@remember if (motorcycleValue.isNotEmpty()) {
+                            motorcycleValue.map {
+                                it.price
+                            }.reduce { acc, d ->
+                                acc + d
+                            }.toProperNumberFormat()
+                        } else {
+                            0.0.toProperNumberFormat()
+                        }
+                    }
                     Text(
-                        text = "Rp.37.000.000",
+                        text = if(currentPage == 0) carTotalPrice else motorcycleTotalPrice,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1, overflow = TextOverflow.Ellipsis
@@ -129,11 +202,79 @@ fun HomeScreen(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(R.string.search_by_categories), fontSize = 15.sp)
-        Spacer(modifier = Modifier.height(6.dp))
-        var selectedTag by remember {
-            mutableStateOf(CarType.SEDAN)
+        TabRow(
+            selectedTabIndex = currentPage,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            divider = {
+            },
+            indicator = {
+                Divider(
+                    modifier = Modifier
+                        .tabIndicatorOffset(it[currentPage]),
+                    thickness = 2.dp, color = MainColorAccent
+                )
+            }, containerColor = Color.Transparent
+        ) {
+            tabVehicle.forEach {
+                Tab(selected = tabVehicle[pagerState.currentPage] == it, onClick = {
+                    scope.launch {
+                        pagerState.scrollToPage(tabVehicle.indexOf(it))
+                    }
+                }) {
+                    Text(
+                        text = it,
+                        color = MainColorAccent,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+            }
         }
+        HorizontalPager(state = pagerState, userScrollEnabled = false) {
+            when (it) {
+                0 -> {
+                    Column {
+                        VehiclePageItems(vehicleData = carValues)
+                    }
+                }
+
+                1 -> {
+                    VehiclePageItems(vehicleData = motorcycleValue)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun <T> VehiclePageItems(
+    vehicleData: List<T>
+) {
+    var selectedVehicleType by remember {
+        mutableStateOf(CarType.SEDAN)
+    }
+    val filteredCarValues = remember(vehicleData, selectedVehicleType) {
+        when (vehicleData) {
+            vehicleData.filterIsInstance(Car::class.java) -> {
+                (vehicleData as List<Car>).filter {
+                    it.type == selectedVehicleType
+                }
+            }
+
+            else -> {
+                null
+            }
+        }
+    }
+    val motorcycleValues = remember {
+        vehicleData.filterIsInstance(Motorcycle::class.java)
+    }
+    AnimatedVisibility(
+        visible = filteredCarValues != null,
+        enter = slideInVertically(tween(400)),
+        exit = slideOutVertically(tween(400))
+    ) {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -143,14 +284,14 @@ fun HomeScreen(
                     modifier = Modifier.height(30.dp),
                     shape = CircleShape,
                     onClick = {
-                        selectedTag = it
+                        selectedVehicleType = it
                     },
                     colors = CardDefaults.cardColors(
-                        containerColor = if (it == selectedTag) MainColorAccent else Color.Transparent
+                        containerColor = if (it == selectedVehicleType) MainColorAccent else Color.Transparent
                     ),
                     border = BorderStroke(
                         1.dp,
-                        color = if (it == selectedTag) MainColorAccent else Color.LightGray
+                        color = if (it == selectedVehicleType) MainColorAccent else Color.LightGray
                     )
                 ) {
                     Column(
@@ -163,34 +304,64 @@ fun HomeScreen(
                         Text(
                             text = it.name,
                             fontSize = 15.sp,
-                            color = if (it == selectedTag) Color.White else Color.LightGray
+                            color = if (it == selectedVehicleType) Color.White else Color.LightGray
                         )
                     }
                 }
 
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp), contentPadding = PaddingValues(
-                bottom = 64.dp
-            )
+
+    }
+    Spacer(modifier = Modifier.height(32.dp))
+    AnimatedVisibility(
+        visible = filteredCarValues?.isEmpty() == true,
+        enter = fadeIn(tween(400)),
+        exit = fadeOut(tween(400))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(carData) { index, data ->
-                VehicleItem(
-                    modifier = Modifier
-                        .height(240.dp)
-                        .offset(y = if (index % 2 == 0) 0.dp else 50.dp),
-                    name = data.name,
-                    image = data.image,
-                    type = data.type?.name ?: "",
-                    price = data.price
-                )
-            }
+            Text(text = stringResource(id = R.string.no_car_title))
+        }
+        return@AnimatedVisibility
+    }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        contentPadding = PaddingValues(
+            bottom = 64.dp
+        )
+    ) {
+        itemsIndexed(filteredCarValues ?: emptyList()) { index, data ->
+            VehicleItem(
+                modifier = Modifier
+                    .height(240.dp)
+                    .offset(y = if (index % 2 == 0) 0.dp else 50.dp),
+                name = data.name,
+                image = data.image,
+                type = data.type?.name ?: "",
+                price = data.price.toProperNumberFormat()
+            )
+        }
+        itemsIndexed(motorcycleValues) { index, value ->
+            VehicleItem(
+                modifier = Modifier
+                    .height(240.dp)
+                    .offset(y = if (index % 2 == 0) 0.dp else 50.dp),
+                name = value.name,
+                image = value.image,
+                type = "",
+                price = value.price.toProperNumberFormat()
+            )
         }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -236,20 +407,22 @@ fun VehicleItem(
                 Text(text = price, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.weight(0.1F))
             }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                Card(colors = CardDefaults.cardColors(MainColorAccent.copy(0.3F))) {
-                    Text(
-                        text = type, modifier = Modifier
-                            .padding(horizontal = 12.dp),
-                        color = MainColorAccent
-                    )
+            if (type != "") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Card(colors = CardDefaults.cardColors(MainColorAccent.copy(0.3F))) {
+                        Text(
+                            text = type, modifier = Modifier
+                                .padding(horizontal = 12.dp),
+                            color = MainColorAccent
+                        )
+                    }
                 }
+
             }
         }
     }

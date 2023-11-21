@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.icons.extended)
     implementation(libs.kotlinx.serialization)
+    implementation(libs.viewmodel)
+    implementation(libs.androidx.hilt.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

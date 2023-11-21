@@ -17,7 +17,9 @@ import androidx.core.view.WindowCompat
 import com.ferdialif.vehicleseller.presentation.detailscreen.DetailScreen
 import com.ferdialif.vehicleseller.presentation.homescreen.HomeScreen
 import com.ferdialif.vehicleseller.ui.theme.VehicleSellerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)

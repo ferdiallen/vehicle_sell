@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey
 interface VehicleModel {
     val releaseYear: Int
     val color: List<String>
-    val price: String
+    val price: Double
 }
 
 @Entity
 data class Car(
-    @PrimaryKey
-    val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     val name: String = "",
     val engine: String = "",
     val passengerCapacity: Int = 0,
@@ -25,21 +25,22 @@ data class Car(
     @RawRes val image: Int? = null,
     override val releaseYear: Int = 0,
     override val color: List<String> = listOf(),
-    override val price: String = "",
+    override val price: Double = 0.0,
 ) : VehicleModel
 
 @Entity
-data class Bicycle(
-    @PrimaryKey
-    val id:Int? = null,
+data class Motorcycle(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     val name: String = "",
+    @RawRes val image:Int? = null,
     val engine: String = "",
-    val suspension: String = "",
+    val suspension: SuspensionType? = null,
     val currentStock: Int = 0,
     val transmissionType: TransmissionType? = null,
     val sold: Int = 0,
     override val releaseYear: Int = 0,
-    override val price: String = "",
+    override val price: Double = 0.0,
     override val color: List<String> = listOf()
 ) : VehicleModel
 
@@ -61,4 +62,13 @@ enum class Colors {
     GREEN,
     YELLOW,
     BLACK
+}
+
+enum class SuspensionType {
+    PARALLEL,
+    TELESCOPIC,
+    TELESCOPIC_UP_DOWN,
+    PLUNGED_REAR_SUSPENSION,
+    SWING_ARM_REAR_SUSPENSION
+
 }

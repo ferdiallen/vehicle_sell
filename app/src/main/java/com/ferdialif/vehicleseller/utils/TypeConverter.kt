@@ -5,7 +5,6 @@ import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-@ProvidedTypeConverter
 class TypeConverter {
     @TypeConverter
     fun saveListOfColorsIntoDatabase(data: List<String>): String {

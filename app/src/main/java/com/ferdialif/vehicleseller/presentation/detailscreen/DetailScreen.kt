@@ -92,7 +92,7 @@ fun DetailScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = carData.first().price,
+                                    text = "1.000.000",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     modifier = Modifier.weight(0.5F),

@@ -6,6 +6,8 @@ import com.ferdialif.vehicleseller.domain.model.CarType
 import com.ferdialif.vehicleseller.domain.model.Colors
 import com.ferdialif.vehicleseller.domain.model.TransmissionType
 
+val tabVehicle = listOf("Car","Bicycle")
+
 val carData = listOf(
     Car(
         name = "Honda Civic Type-R",
@@ -16,9 +18,9 @@ val carData = listOf(
         releaseYear = 2023,
         currentStock = 20,
         color = listOf(Colors.RED.name, Colors.WHITE.name),
-        price = "Rp. 1.399.000.000,00",
+        price = 250_000_000.00,
         transmissionType = TransmissionType.MANUAL,
-        sold = 20
+        sold = 5
     ),
     Car(
         name = "Lamborghini Aventador",
@@ -29,9 +31,9 @@ val carData = listOf(
         releaseYear = 2023,
         currentStock = 45,
         color = listOf(Colors.GREEN.name, Colors.WHITE.name),
-        price = "Rp. 8.799.000.000,00",
+        price = 400_000_000.00,
         transmissionType = TransmissionType.MANUAL,
-        sold = 50
+        sold = 2
     ),
     Car(
         name = "Pagani Huayra",
@@ -42,9 +44,9 @@ val carData = listOf(
         releaseYear = 2018,
         currentStock = 12,
         color = listOf(Colors.BLACK.name, Colors.WHITE.name),
-        price = "Rp. 114.037.000.000,00",
+        price = 80_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 20
+        sold = 4
     ),
     Car(
         name = "Toyota Supra",
@@ -55,9 +57,9 @@ val carData = listOf(
         releaseYear = 2023,
         currentStock = 100,
         color = listOf(Colors.RED.name, Colors.WHITE.name),
-        price = "Rp. 2.019.000.000,00",
+        price = 75_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 15
+        sold = 5
     ),
     Car(
         name = "Toyota Rush",
@@ -68,8 +70,8 @@ val carData = listOf(
         releaseYear = 2023,
         currentStock = 120,
         color = listOf(Colors.RED.name, Colors.WHITE.name),
-        price = "Rp. 306.000.000,00",
+        price = 50_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 100
+        sold = 5
     )
 )
