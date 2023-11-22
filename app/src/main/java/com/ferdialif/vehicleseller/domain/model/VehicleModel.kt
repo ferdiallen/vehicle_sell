@@ -1,9 +1,12 @@
 package com.ferdialif.vehicleseller.domain.model
 
 import androidx.annotation.RawRes
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+import java.io.Serial
 
 interface VehicleModel {
     val releaseYear: Int
@@ -12,6 +15,7 @@ interface VehicleModel {
 }
 
 @Entity
+@Serializable
 data class Car(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
@@ -26,14 +30,16 @@ data class Car(
     override val releaseYear: Int = 0,
     override val color: List<String> = listOf(),
     override val price: Double = 0.0,
+    @StringRes val description: Int? = null
 ) : VehicleModel
 
 @Entity
+@Serializable
 data class Motorcycle(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     val name: String = "",
-    @RawRes val image:Int? = null,
+    @RawRes val image: Int? = null,
     val engine: String = "",
     val suspension: SuspensionType? = null,
     val currentStock: Int = 0,
@@ -41,7 +47,8 @@ data class Motorcycle(
     val sold: Int = 0,
     override val releaseYear: Int = 0,
     override val price: Double = 0.0,
-    override val color: List<String> = listOf()
+    override val color: List<String> = listOf(),
+    @StringRes val description: Int? = null
 ) : VehicleModel
 
 enum class TransmissionType {

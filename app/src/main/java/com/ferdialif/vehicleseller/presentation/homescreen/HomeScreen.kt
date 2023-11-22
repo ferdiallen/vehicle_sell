@@ -3,14 +3,17 @@
 package com.ferdialif.vehicleseller.presentation.homescreen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -84,10 +87,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    onNavigateToDetailScreen: (data: Any) -> Unit,
+    viewModel: HomeViewModel
 ) {
-    val carValues by viewModel.carList.collectAsState(initial = emptyList())
-    val motorcycleValue by viewModel.motorcycleList.collectAsState(initial = emptyList())
+    val carValues by viewModel.carList.collectAsState()
+    val motorcycleValue by viewModel.motorcycleList.collectAsState()
     val pagerState = rememberPagerState(pageCount = { tabVehicle.size })
     val currentPage by remember {
         derivedStateOf {
@@ -192,7 +196,7 @@ fun HomeScreen(
                         }
                     }
                     Text(
-                        text = if(currentPage == 0) carTotalPrice else motorcycleTotalPrice,
+                        text = if (currentPage == 0) carTotalPrice else motorcycleTotalPrice,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1, overflow = TextOverflow.Ellipsis
@@ -231,16 +235,73 @@ fun HomeScreen(
                 }
             }
         }
+        var selectedVehicleType by remember {
+            mutableStateOf(CarType.SEDAN)
+        }
+        val filteredCarValues = remember(carValues, selectedVehicleType) {
+            carValues.filter {
+                it.type == selectedVehicleType
+            }
+        }
+        AnimatedVisibility(
+            visible = currentPage == 0,
+            enter = slideInVertically(tween(400), initialOffsetY = {
+                it - 100
+            }),
+            exit = fadeOut(tween(400)) + slideOutVertically()
+        ) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(CarType.entries) {
+                    Card(
+                        modifier = Modifier.height(30.dp),
+                        shape = CircleShape,
+                        onClick = {
+                            selectedVehicleType = it
+                        },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (it == selectedVehicleType) MainColorAccent else Color.Transparent
+                        ),
+                        border = BorderStroke(
+                            1.dp,
+                            color = if (it == selectedVehicleType) MainColorAccent else Color.LightGray
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(horizontal = 12.dp)
+                                .padding(top = 2.dp),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = it.name,
+                                fontSize = 15.sp,
+                                color = if (it == selectedVehicleType) Color.White else Color.LightGray
+                            )
+                        }
+                    }
+
+                }
+            }
+
+        }
         HorizontalPager(state = pagerState, userScrollEnabled = false) {
             when (it) {
                 0 -> {
                     Column {
-                        VehiclePageItems(vehicleData = carValues)
+                        VehiclePageItems(vehicleData = filteredCarValues, onItemClick = {out->
+                            onNavigateToDetailScreen(filteredCarValues[out])
+                        })
                     }
                 }
 
                 1 -> {
-                    VehiclePageItems(vehicleData = motorcycleValue)
+                    VehiclePageItems(vehicleData = motorcycleValue, onItemClick = {out->
+                        onNavigateToDetailScreen(motorcycleValue[out])
+                    })
                 }
             }
         }
@@ -249,73 +310,18 @@ fun HomeScreen(
 
 @Composable
 fun <T> VehiclePageItems(
-    vehicleData: List<T>
+    vehicleData: List<T>,
+    onItemClick: (index: Int) -> Unit
 ) {
-    var selectedVehicleType by remember {
-        mutableStateOf(CarType.SEDAN)
-    }
-    val filteredCarValues = remember(vehicleData, selectedVehicleType) {
-        when (vehicleData) {
-            vehicleData.filterIsInstance(Car::class.java) -> {
-                (vehicleData as List<Car>).filter {
-                    it.type == selectedVehicleType
-                }
-            }
-
-            else -> {
-                null
-            }
-        }
-    }
-    val motorcycleValues = remember {
+    val motorcycleValues = remember(vehicleData) {
         vehicleData.filterIsInstance(Motorcycle::class.java)
     }
-    AnimatedVisibility(
-        visible = filteredCarValues != null,
-        enter = slideInVertically(tween(400)),
-        exit = slideOutVertically(tween(400))
-    ) {
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(CarType.entries) {
-                Card(
-                    modifier = Modifier.height(30.dp),
-                    shape = CircleShape,
-                    onClick = {
-                        selectedVehicleType = it
-                    },
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (it == selectedVehicleType) MainColorAccent else Color.Transparent
-                    ),
-                    border = BorderStroke(
-                        1.dp,
-                        color = if (it == selectedVehicleType) MainColorAccent else Color.LightGray
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(horizontal = 12.dp)
-                            .padding(top = 2.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = it.name,
-                            fontSize = 15.sp,
-                            color = if (it == selectedVehicleType) Color.White else Color.LightGray
-                        )
-                    }
-                }
-
-            }
-        }
-
+    val carValues = remember(vehicleData) {
+        vehicleData.filterIsInstance(Car::class.java)
     }
     Spacer(modifier = Modifier.height(32.dp))
     AnimatedVisibility(
-        visible = filteredCarValues?.isEmpty() == true,
+        visible = vehicleData.isEmpty(),
         enter = fadeIn(tween(400)),
         exit = fadeOut(tween(400))
     ) {
@@ -337,7 +343,7 @@ fun <T> VehiclePageItems(
             bottom = 64.dp
         )
     ) {
-        itemsIndexed(filteredCarValues ?: emptyList()) { index, data ->
+        itemsIndexed(carValues) { index, data ->
             VehicleItem(
                 modifier = Modifier
                     .height(240.dp)
@@ -345,10 +351,13 @@ fun <T> VehiclePageItems(
                 name = data.name,
                 image = data.image,
                 type = data.type?.name ?: "",
-                price = data.price.toProperNumberFormat()
+                price = data.price.toProperNumberFormat(),
+                onItemClick = {
+                    onItemClick(index)
+                }
             )
         }
-        itemsIndexed(motorcycleValues) { index, value ->
+        itemsIndexed(motorcycleValues) {  index, value ->
             VehicleItem(
                 modifier = Modifier
                     .height(240.dp)
@@ -356,7 +365,10 @@ fun <T> VehiclePageItems(
                 name = value.name,
                 image = value.image,
                 type = "",
-                price = value.price.toProperNumberFormat()
+                price = value.price.toProperNumberFormat(),
+                onItemClick = {
+                    onItemClick(index)
+                }
             )
         }
     }
@@ -371,13 +383,14 @@ fun VehicleItem(
     name: String = "",
     price: String = "",
     type: String = "",
-    image: Any? = null
+    image: Any? = null,
+    onItemClick: () -> Unit
 ) {
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(6.dp),
         onClick = {
-
+            onItemClick()
         },
         colors = CardDefaults.cardColors(
             if (isSystemInDarkTheme())
@@ -401,8 +414,8 @@ fun VehicleItem(
                 )
                 Text(
                     text = name,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold, maxLines = 1
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold, maxLines = 2
                 )
                 Text(text = price, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.weight(0.1F))

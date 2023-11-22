@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.ferdialif.vehicleseller.core.navigation.Navigation
 import com.ferdialif.vehicleseller.presentation.detailscreen.DetailScreen
 import com.ferdialif.vehicleseller.presentation.homescreen.HomeScreen
 import com.ferdialif.vehicleseller.ui.theme.VehicleSellerTheme
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VehicleSellerTheme {
-                HomeScreen(
+                Navigation(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()

@@ -6,7 +6,7 @@ import com.ferdialif.vehicleseller.domain.model.CarType
 import com.ferdialif.vehicleseller.domain.model.Colors
 import com.ferdialif.vehicleseller.domain.model.TransmissionType
 
-val tabVehicle = listOf("Car","Bicycle")
+val tabVehicle = listOf("Car", "Bicycle")
 
 val carData = listOf(
     Car(
@@ -20,7 +20,8 @@ val carData = listOf(
         color = listOf(Colors.RED.name, Colors.WHITE.name),
         price = 250_000_000.00,
         transmissionType = TransmissionType.MANUAL,
-        sold = 5
+        sold = 5,
+        description = R.string.type_r
     ),
     Car(
         name = "Lamborghini Aventador",
@@ -33,7 +34,8 @@ val carData = listOf(
         color = listOf(Colors.GREEN.name, Colors.WHITE.name),
         price = 400_000_000.00,
         transmissionType = TransmissionType.MANUAL,
-        sold = 2
+        sold = 2,
+        description = R.string.aventador
     ),
     Car(
         name = "Pagani Huayra",
@@ -46,7 +48,8 @@ val carData = listOf(
         color = listOf(Colors.BLACK.name, Colors.WHITE.name),
         price = 80_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 4
+        sold = 4,
+        description = R.string.pagani
     ),
     Car(
         name = "Toyota Supra",
@@ -59,7 +62,8 @@ val carData = listOf(
         color = listOf(Colors.RED.name, Colors.WHITE.name),
         price = 75_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 5
+        sold = 5,
+        description = R.string.supra
     ),
     Car(
         name = "Toyota Rush",
@@ -72,6 +76,7 @@ val carData = listOf(
         color = listOf(Colors.RED.name, Colors.WHITE.name),
         price = 50_000_000.00,
         transmissionType = TransmissionType.MATIC,
-        sold = 5
+        sold = 5,
+        description = R.string.rush
     )
 )
